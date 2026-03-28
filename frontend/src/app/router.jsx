@@ -1,0 +1,15 @@
+import HomePage from '../pages/Home/HomePage.jsx';
+import UploadCropPage from '../pages/UploadCrop/UploadCropPage.jsx';
+import DiagnosisResultPage from '../pages/DiagnosisResult/DiagnosisResultPage.jsx';
+import HistoryPage from '../pages/History/HistoryPage.jsx';
+import DashboardPage from '../pages/Dashboard/DashboardPage.jsx';
+
+export const routes = {
+  '#/': HomePage,
+  '#/upload-crop': UploadCropPage,
+  '#/diagnosis-result': DiagnosisResultPage,
+  '#/history': HistoryPage,
+  '#/dashboard': DashboardPage,
+};
+
+export const resolveRoute = (hash) => routes[hash] || HomePage;
