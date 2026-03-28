@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai-agriculture-doctor-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agri_doctor
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d agri_doctor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: ai-agriculture-doctor-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/agri_doctor?schema=public
+      JWT_SECRET: docker-prod-jwt-secret-change-this
+      FRONTEND_ORIGIN: http://localhost:8081
+      PUBLIC_API_URL: http://localhost:3002
+      UPLOAD_DIR: uploads
+      DEMO_USER_EMAIL: farmer@example.com
+      DEMO_USER_PASSWORD: farmer123
+      DEMO_ADMIN_EMAIL: admin@example.com
+      DEMO_ADMIN_PASSWORD: admin1234
+      OPENAI_API_KEY: ""
+      OPENAI_MODEL: gpt-5-mini
+    ports:
+      - "3002:3000"
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:3002
+    container_name: ai-agriculture-doctor-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8081:80"
+
+volumes:
+  postgres_data:
+  backend_uploads:

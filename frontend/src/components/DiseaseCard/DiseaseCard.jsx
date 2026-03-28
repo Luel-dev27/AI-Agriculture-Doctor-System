@@ -8,6 +8,7 @@ export default function DiseaseCard({
   suspectedConditions,
   nextSteps,
   cropName,
+  imageUrl,
   imageName,
   createdAt,
   provider,
@@ -33,6 +34,15 @@ export default function DiseaseCard({
         {model ? <p><span>Model</span>{model}</p> : null}
         {createdAt ? <p><span>Diagnosed</span>{new Date(createdAt).toLocaleString()}</p> : null}
       </div>
+      {imageUrl ? (
+        <div className="preview-stage">
+          <img
+            src={imageUrl}
+            alt={imageName || `${cropName || 'Crop'} diagnosis`}
+            className="preview-image"
+          />
+        </div>
+      ) : null}
       {summary ? <p className="summary-text">{summary}</p> : null}
       {suspectedConditions?.length ? (
         <div className="insight-block">

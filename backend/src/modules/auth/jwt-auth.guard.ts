@@ -35,7 +35,21 @@ export class JwtAuthGuard implements CanActivate {
           secret: this.configService.get<string>('jwtSecret') || 'change-me',
         },
       );
-      request.user = await this.usersService.getProfile(payload.sub);
+      if (payload.tokenType !== 'access') {
+        throw new UnauthorizedException(
+          'Access token is required for this endpoint.',
+        );
+      }
+
+      const user = await this.usersService.findById(payload.sub);
+
+      if (!user || user.sessionVersion !== payload.sessionVersion) {
+        throw new UnauthorizedException(
+          'Invalid or expired authorization token.',
+        );
+      }
+
+      request.user = this.usersService.toPublicUser(user);
       return true;
     } catch {
       throw new UnauthorizedException(

@@ -39,8 +39,8 @@ export default function Navbar({ currentHash, authState, onLogout }) {
             <button
               type="button"
               className="nav-action"
-              onClick={() => {
-                onLogout();
+              onClick={async () => {
+                await onLogout();
                 window.location.hash = '#/';
               }}
             >

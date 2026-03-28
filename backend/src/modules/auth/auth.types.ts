@@ -3,4 +3,6 @@ export interface AuthTokenPayload {
   email: string;
   role: 'farmer' | 'agronomist' | 'admin';
   name: string;
+  sessionVersion: number;
+  tokenType: 'access' | 'refresh';
 }

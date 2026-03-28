@@ -1,8 +1,18 @@
-import { getStoredAccessToken } from './userService.js';
+import {
+  clearAuthSession,
+  getStoredAccessToken,
+  getStoredRefreshToken,
+  refreshSession,
+  saveAuthSession,
+} from './userService.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 export async function apiRequest(path, options = {}) {
+  return apiRequestInternal(path, options, true);
+}
+
+async function apiRequestInternal(path, options = {}, allowRefresh = true) {
   const headers = { ...(options.headers || {}) };
   const isFormData = options.body instanceof FormData;
   const accessToken = getStoredAccessToken();
@@ -19,6 +29,26 @@ export async function apiRequest(path, options = {}) {
     headers,
     ...options,
   });
+
+  if (
+    response.status === 401 &&
+    allowRefresh &&
+    !path.startsWith('/auth/') &&
+    getStoredRefreshToken()
+  ) {
+    try {
+      const refreshedSession = await refreshSession(getStoredRefreshToken());
+      saveAuthSession({
+        accessToken: refreshedSession.accessToken,
+        refreshToken: refreshedSession.refreshToken,
+        user: refreshedSession.user,
+      });
+
+      return apiRequestInternal(path, options, false);
+    } catch {
+      clearAuthSession();
+    }
+  }
 
   if (!response.ok) {
     const errorText = await response.text();

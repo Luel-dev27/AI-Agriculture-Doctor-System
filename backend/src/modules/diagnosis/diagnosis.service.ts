@@ -48,7 +48,7 @@ export class DiagnosisService {
     });
 
     const diagnosis: DiagnosisEntity = {
-      id: Date.now(),
+      id: 0,
       userId: payload.userId ?? 0,
       userName: payload.userName?.trim() || 'Unknown user',
       userEmail: payload.userEmail?.trim() || 'unknown@example.com',

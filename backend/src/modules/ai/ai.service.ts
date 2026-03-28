@@ -5,6 +5,14 @@ import { AiAnalysisInput, AiAnalysisResult } from './ai.interface';
 export class AiService {
   private readonly logger = new Logger(AiService.name);
   private readonly defaultModel = process.env.OPENAI_MODEL || 'gpt-5-mini';
+  private static readonly MIN_TRUSTED_CONFIDENCE = 70;
+  private static readonly UNCERTAIN_DISEASE_NAMES = new Set([
+    'needs expert review',
+    'unknown',
+    'uncertain',
+    'inconclusive',
+    'not sure',
+  ]);
 
   async analyze(
     input: AiAnalysisInput & { imageBuffer?: Buffer },
@@ -192,6 +200,7 @@ export class AiService {
     const cropName = input.cropName?.trim() || 'crop';
     const mimeType = input.mimeType || 'image/jpeg';
     const base64Image = input.imageBuffer?.toString('base64');
+    const profile = this.getCropProfile(cropName);
 
     if (!base64Image) {
       throw new Error('Missing image data for OpenAI analysis.');
@@ -262,8 +271,7 @@ export class AiService {
     }
 
     const parsed = this.extractJsonObject(rawText) as Partial<AiAnalysisResult>;
-
-    return {
+    const normalized = {
       diseaseName: parsed.diseaseName?.trim() || 'Needs expert review',
       confidence: this.normalizeConfidence(parsed.confidence),
       recommendation:
@@ -283,9 +291,18 @@ export class AiService {
         'Capture another clear image',
         'Consult local agronomy support if spread is increasing',
       ]),
-      provider: 'openai',
+      provider: 'openai' as const,
       model: this.defaultModel,
     };
+
+    if (!this.isTrustedOpenAiResult(normalized)) {
+      this.logger.warn(
+        `OpenAI result was too uncertain for direct use (confidence=${normalized.confidence}, disease="${normalized.diseaseName}").`,
+      );
+      return this.buildExpertReviewResult(cropName, profile, 'openai');
+    }
+
+    return normalized;
   }
 
   private normalizeConfidence(value: unknown): number {
@@ -327,6 +344,32 @@ export class AiService {
     return fallback;
   }
 
+  private isTrustedOpenAiResult(result: AiAnalysisResult): boolean {
+    const normalizedDiseaseName = result.diseaseName.trim().toLowerCase();
+
+    if (
+      !normalizedDiseaseName ||
+      AiService.UNCERTAIN_DISEASE_NAMES.has(normalizedDiseaseName)
+    ) {
+      return false;
+    }
+
+    if (result.confidence < AiService.MIN_TRUSTED_CONFIDENCE) {
+      return false;
+    }
+
+    if (
+      !result.recommendation.trim() ||
+      !result.summary.trim() ||
+      result.suspectedConditions.length === 0 ||
+      result.nextSteps.length === 0
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   private extractJsonObject(rawText: string): unknown {
     try {
       return JSON.parse(rawText);
@@ -353,5 +396,28 @@ export class AiService {
         ],
       }
     );
+  }
+
+  private buildExpertReviewResult(
+    cropName: string,
+    profile: { watchFor: string[]; guidance: string[] },
+    provider: AiAnalysisResult['provider'],
+  ): AiAnalysisResult {
+    return {
+      diseaseName: 'Needs expert review',
+      confidence: 58,
+      recommendation: `The current AI analysis for this ${cropName} is too uncertain to trust directly. Keep the image, record field observations, and seek expert review if symptoms persist or spread.`,
+      summary:
+        'The system captured the case, but the diagnosis confidence was too low or incomplete for a dependable disease label.',
+      severity: 'medium',
+      urgency: 'soon',
+      suspectedConditions: profile.watchFor,
+      nextSteps: [
+        ...profile.guidance,
+        'Capture another close-up image in natural light',
+      ],
+      provider,
+      model: this.defaultModel,
+    };
   }
 }

@@ -9,6 +9,26 @@ export function login(payload) {
   });
 }
 
+export function register(payload) {
+  return apiRequest('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function refreshSession(refreshToken) {
+  return apiRequest('/auth/refresh', {
+    method: 'POST',
+    body: JSON.stringify({ refreshToken }),
+  });
+}
+
+export function logout() {
+  return apiRequest('/auth/logout', {
+    method: 'POST',
+  });
+}
+
 export function getProfile() {
   return apiRequest('/users/me');
 }
@@ -30,6 +50,10 @@ export function getStoredAuthSession() {
 
 export function getStoredAccessToken() {
   return getStoredAuthSession()?.accessToken || '';
+}
+
+export function getStoredRefreshToken() {
+  return getStoredAuthSession()?.refreshToken || '';
 }
 
 export function saveAuthSession(session) {

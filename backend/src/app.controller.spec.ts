@@ -15,8 +15,11 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return API health information', () => {
+      expect(appController.getHealth()).toEqual({
+        name: 'AI Agriculture Doctor System API',
+        status: 'ok',
+      });
     });
   });
 });

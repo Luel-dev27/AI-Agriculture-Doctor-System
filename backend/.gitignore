@@ -52,5 +52,13 @@ pids
 *.seed
 *.pid.lock
 
+# Local database artifacts from the old SQLite setup
+dev.db
+data/diagnoses.json
+
+# Local uploaded crop images
+uploads/*
+!uploads/.gitkeep
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

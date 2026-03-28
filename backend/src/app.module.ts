@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import databaseConfig from './config/database.config';
 import envConfig from './config/env.config';
+import { validateEnv } from './config/validate-env';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { CropsModule } from './modules/crops/crops.module';
@@ -18,6 +19,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
       isGlobal: true,
       envFilePath: '.env',
       load: [envConfig, databaseConfig],
+      validate: validateEnv,
     }),
     PrismaModule,
     AuthModule,

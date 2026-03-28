@@ -5,6 +5,7 @@ import {
   clearAuthSession,
   getProfile,
   getStoredAuthSession,
+  logout,
 } from '../services/userService.js';
 
 const protectedRoutes = new Set(['#/upload-crop', '#/history', '#/dashboard']);
@@ -67,6 +68,18 @@ function App() {
 
   const CurrentPage = resolveRoute(currentHash);
 
+  const handleLogout = async () => {
+    try {
+      if (getStoredAuthSession()?.accessToken) {
+        await logout();
+      }
+    } catch {
+      // Best-effort remote logout; local cleanup still happens.
+    } finally {
+      clearAuthSession();
+    }
+  };
+
   return (
     <div className="app-shell">
       <div className="app-backdrop app-backdrop-one" />
@@ -74,7 +87,7 @@ function App() {
       <Navbar
         currentHash={currentHash}
         authState={authState}
-        onLogout={clearAuthSession}
+        onLogout={handleLogout}
       />
       <main>
         <CurrentPage authState={authState} isAuthLoading={isAuthLoading} />
