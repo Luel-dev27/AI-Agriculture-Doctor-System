@@ -124,6 +124,34 @@ main {
   flex-wrap: wrap;
 }
 
+.nav-session {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.session-badge {
+  display: grid;
+  gap: 2px;
+  min-width: 140px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f5efde;
+}
+
+.session-badge span {
+  font-size: 0.86rem;
+}
+
+.session-badge strong {
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 239, 222, 0.76);
+}
+
 .navbar a {
   color: rgba(255, 248, 234, 0.84);
   text-decoration: none;
@@ -140,6 +168,22 @@ main {
 .nav-links a.active {
   color: #fffaf0;
   background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fffaf0;
+  text-decoration: none;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .home-shell {
@@ -472,6 +516,64 @@ main {
   gap: 20px;
 }
 
+.login-shell {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  align-items: start;
+}
+
+.login-hero {
+  padding: 36px;
+  border: 1px solid var(--line);
+  border-radius: 32px;
+  background:
+    linear-gradient(160deg, rgba(17, 50, 35, 0.96), rgba(30, 83, 59, 0.94)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  color: #f9f4e6;
+  box-shadow: 0 22px 60px rgba(15, 43, 25, 0.18);
+}
+
+.login-hero h1 {
+  margin: 12px 0 14px;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.login-hero .hero-text {
+  color: rgba(249, 244, 230, 0.8);
+}
+
+.login-card {
+  display: grid;
+  gap: 16px;
+}
+
+.login-form {
+  display: grid;
+  gap: 10px;
+}
+
+.login-credentials {
+  display: grid;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(249, 244, 230, 0.88);
+}
+
+.compact-heading {
+  margin-bottom: 0;
+}
+
+.form-submit {
+  border: 0;
+  cursor: pointer;
+}
+
 .upload-layout {
   display: grid;
   gap: 20px;
@@ -698,6 +800,7 @@ main {
   .hero-panel,
   .feature-ribbon,
   .upload-layout,
+  .login-shell,
   .section-heading {
     grid-template-columns: 1fr;
     flex-direction: column;
@@ -733,6 +836,11 @@ main {
 
   .navbar {
     padding: 16px;
+  }
+
+  .nav-session {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 

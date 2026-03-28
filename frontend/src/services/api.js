@@ -1,11 +1,18 @@
+import { getStoredAccessToken } from './userService.js';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 export async function apiRequest(path, options = {}) {
   const headers = { ...(options.headers || {}) };
   const isFormData = options.body instanceof FormData;
+  const accessToken = getStoredAccessToken();
 
   if (!isFormData && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
+  }
+
+  if (accessToken && !headers.Authorization) {
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -20,7 +27,9 @@ export async function apiRequest(path, options = {}) {
     try {
       const parsed = JSON.parse(errorText);
       parsedMessage = Array.isArray(parsed.message) ? parsed.message.join(', ') : parsed.message;
-    } catch {}
+    } catch {
+      parsedMessage = '';
+    }
 
     throw new Error(parsedMessage || errorText || `API request failed: ${response.status}`);
   }

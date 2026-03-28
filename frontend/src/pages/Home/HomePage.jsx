@@ -11,6 +11,7 @@ export default function HomePage() {
           <div className="hero-actions">
             <a href="#/upload-crop" className="primary-link">Start a diagnosis</a>
             <a href="#/dashboard" className="secondary-link">View command center</a>
+            <a href="#/login" className="secondary-link">Sign in</a>
           </div>
         </div>
         <div className="hero-grid">

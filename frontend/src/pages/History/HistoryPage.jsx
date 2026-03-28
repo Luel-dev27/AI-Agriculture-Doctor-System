@@ -4,7 +4,7 @@ import Alert from '../../components/Alert/Alert.jsx';
 import Loader from '../../components/Loader/Loader.jsx';
 import { getDiagnosisHistory } from '../../services/diagnosisService.js';
 
-export default function HistoryPage() {
+export default function HistoryPage({ authState }) {
   const [historyItems, setHistoryItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -48,6 +48,18 @@ export default function HistoryPage() {
         </div>
         <p className="section-copy">Track how crop cases have been classified over time and review previous recommendations.</p>
       </div>
+      {authState?.user ? (
+        <div className="history-summary">
+          <article className="summary-chip">
+            <span>Signed in as</span>
+            <strong>{authState.user.name}</strong>
+          </article>
+          <article className="summary-chip">
+            <span>Account</span>
+            <strong>{authState.user.email}</strong>
+          </article>
+        </div>
+      ) : null}
       {!isLoading && !errorMessage && historyItems.length > 0 ? (
         <div className="history-summary">
           <article className="summary-chip">

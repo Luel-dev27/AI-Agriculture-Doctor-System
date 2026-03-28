@@ -4,10 +4,14 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateDiagnosisDto } from './dto/create-diagnosis.dto';
 import { DiagnosisService } from './diagnosis.service';
 
@@ -17,9 +21,14 @@ export class DiagnosisController {
 
   constructor(private readonly diagnosisService: DiagnosisService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   create(
+    @Req()
+    request: Request & {
+      user?: { id: number; name: string; email: string };
+    },
     @UploadedFile()
     file:
       | {
@@ -46,6 +55,9 @@ export class DiagnosisController {
     }
 
     return this.diagnosisService.create({
+      userId: request.user?.id,
+      userName: request.user?.name,
+      userEmail: request.user?.email,
       cropId: body.cropId,
       cropName: body.cropName,
       imageUrl: body.imageUrl,
@@ -55,8 +67,14 @@ export class DiagnosisController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('history')
-  history() {
-    return this.diagnosisService.history();
+  history(
+    @Req()
+    request: Request & {
+      user?: { id: number };
+    },
+  ) {
+    return this.diagnosisService.history(request.user?.id);
   }
 }

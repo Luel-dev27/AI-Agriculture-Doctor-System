@@ -13,6 +13,9 @@ export class DiagnosisService {
   ) {}
 
   async create(payload: {
+    userId?: number;
+    userName?: string;
+    userEmail?: string;
     cropId?: number;
     cropName?: string;
     imageUrl?: string;
@@ -46,6 +49,9 @@ export class DiagnosisService {
 
     const diagnosis: DiagnosisEntity = {
       id: Date.now(),
+      userId: payload.userId ?? 0,
+      userName: payload.userName?.trim() || 'Unknown user',
+      userEmail: payload.userEmail?.trim() || 'unknown@example.com',
       cropId: payload.cropId ?? null,
       cropName: payload.cropName?.trim() || 'Unknown crop',
       imageUrl: imageUrl ?? null,
@@ -66,7 +72,7 @@ export class DiagnosisService {
     return this.diagnosisRepository.save(diagnosis);
   }
 
-  history() {
-    return this.diagnosisRepository.findAll();
+  history(userId?: number) {
+    return this.diagnosisRepository.findAll(userId);
   }
 }

@@ -1,16 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DiseaseCard from '../../components/DiseaseCard/DiseaseCard.jsx';
 import Alert from '../../components/Alert/Alert.jsx';
 
 export default function DiagnosisResultPage() {
-  const [diagnosis, setDiagnosis] = useState(null);
-
-  useEffect(() => {
+  const [diagnosis] = useState(() => {
     const storedDiagnosis = sessionStorage.getItem('latestDiagnosis');
-    if (storedDiagnosis) {
-      setDiagnosis(JSON.parse(storedDiagnosis));
-    }
-  }, []);
+    return storedDiagnosis ? JSON.parse(storedDiagnosis) : null;
+  });
 
   return (
     <section className="page">

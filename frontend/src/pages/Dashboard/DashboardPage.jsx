@@ -4,7 +4,7 @@ import Loader from '../../components/Loader/Loader.jsx';
 import { getAiStatus } from '../../services/aiService.js';
 import { getDiagnosisHistory } from '../../services/diagnosisService.js';
 
-export default function DashboardPage() {
+export default function DashboardPage({ authState }) {
   const [historyItems, setHistoryItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -62,6 +62,22 @@ export default function DashboardPage() {
         </div>
         <p className="section-copy">Monitor throughput, severity signals, and model usage from a single control surface.</p>
       </div>
+      {authState?.user ? (
+        <div className="history-summary">
+          <article className="summary-chip">
+            <span>Operator</span>
+            <strong>{authState.user.name}</strong>
+          </article>
+          <article className="summary-chip">
+            <span>Email</span>
+            <strong>{authState.user.email}</strong>
+          </article>
+          <article className="summary-chip">
+            <span>Role</span>
+            <strong>{authState.user.role}</strong>
+          </article>
+        </div>
+      ) : null}
       {isLoading ? <Loader /> : null}
       {errorMessage ? <Alert message={errorMessage} /> : null}
       {!isLoading && !errorMessage ? (

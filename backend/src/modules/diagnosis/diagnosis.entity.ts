@@ -1,5 +1,8 @@
 export class DiagnosisEntity {
   id!: number;
+  userId!: number;
+  userName!: string;
+  userEmail!: string;
   cropId!: number | null;
   cropName!: string;
   imageUrl!: string | null;

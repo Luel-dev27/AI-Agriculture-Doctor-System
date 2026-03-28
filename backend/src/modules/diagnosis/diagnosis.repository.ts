@@ -1,41 +1,109 @@
 import { Injectable } from '@nestjs/common';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { PrismaService } from '../prisma/prisma.service';
 import { DiagnosisEntity } from './diagnosis.entity';
 
 @Injectable()
 export class DiagnosisRepository {
-  private readonly dataDirectory = join(process.cwd(), 'data');
-  private readonly filePath = join(this.dataDirectory, 'diagnoses.json');
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<DiagnosisEntity[]> {
-    await this.ensureStore();
-
-    const raw = await readFile(this.filePath, 'utf8');
-    const items = JSON.parse(raw) as Array<
-      DiagnosisEntity & { createdAt: string }
-    >;
+  async findAll(userId?: number): Promise<DiagnosisEntity[]> {
+    const items = await this.prisma.diagnosis.findMany({
+      where: typeof userId === 'number' ? { userId } : undefined,
+      include: {
+        user: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
     return items.map((item) => ({
-      ...item,
-      createdAt: new Date(item.createdAt),
+      id: item.id,
+      userId: item.userId,
+      userName: item.user.name,
+      userEmail: item.user.email,
+      cropId: item.cropId,
+      cropName: item.cropName,
+      imageUrl: item.imageUrl,
+      imageName: item.imageName,
+      diseaseName: item.diseaseName,
+      confidence: item.confidence,
+      recommendation: item.recommendation,
+      summary: item.summary,
+      severity: item.severity as DiagnosisEntity['severity'],
+      urgency: item.urgency as DiagnosisEntity['urgency'],
+      suspectedConditions: this.asStringArray(item.suspectedConditions),
+      nextSteps: this.asStringArray(item.nextSteps),
+      provider: item.provider as DiagnosisEntity['provider'],
+      model: item.model,
+      createdAt: item.createdAt,
     }));
   }
 
   async save(diagnosis: DiagnosisEntity): Promise<DiagnosisEntity> {
-    const items = await this.findAll();
-    items.unshift(diagnosis);
-    await writeFile(this.filePath, JSON.stringify(items, null, 2), 'utf8');
-    return diagnosis;
+    const created = await this.prisma.diagnosis.create({
+      data: {
+        userId: diagnosis.userId,
+        cropId: diagnosis.cropId,
+        cropName: diagnosis.cropName,
+        imageUrl: diagnosis.imageUrl,
+        imageName: diagnosis.imageName,
+        diseaseName: diagnosis.diseaseName,
+        confidence: diagnosis.confidence,
+        recommendation: diagnosis.recommendation,
+        summary: diagnosis.summary,
+        severity: diagnosis.severity,
+        urgency: diagnosis.urgency,
+        suspectedConditions: JSON.stringify(diagnosis.suspectedConditions),
+        nextSteps: JSON.stringify(diagnosis.nextSteps),
+        provider: diagnosis.provider,
+        model: diagnosis.model,
+        createdAt: diagnosis.createdAt,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return {
+      id: created.id,
+      userId: created.userId,
+      userName: created.user.name,
+      userEmail: created.user.email,
+      cropId: created.cropId,
+      cropName: created.cropName,
+      imageUrl: created.imageUrl,
+      imageName: created.imageName,
+      diseaseName: created.diseaseName,
+      confidence: created.confidence,
+      recommendation: created.recommendation,
+      summary: created.summary,
+      severity: created.severity as DiagnosisEntity['severity'],
+      urgency: created.urgency as DiagnosisEntity['urgency'],
+      suspectedConditions: this.asStringArray(created.suspectedConditions),
+      nextSteps: this.asStringArray(created.nextSteps),
+      provider: created.provider as DiagnosisEntity['provider'],
+      model: created.model,
+      createdAt: created.createdAt,
+    };
   }
 
-  private async ensureStore(): Promise<void> {
-    await mkdir(this.dataDirectory, { recursive: true });
+  private asStringArray(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      return value.filter((item): item is string => typeof item === 'string');
+    }
+
+    if (typeof value !== 'string') {
+      return [];
+    }
 
     try {
-      await readFile(this.filePath, 'utf8');
+      const parsed = JSON.parse(value) as unknown;
+      return Array.isArray(parsed)
+        ? parsed.filter((item): item is string => typeof item === 'string')
+        : [];
     } catch {
-      await writeFile(this.filePath, '[]', 'utf8');
+      return [];
     }
   }
 }
