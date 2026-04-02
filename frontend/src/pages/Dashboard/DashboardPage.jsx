@@ -44,6 +44,7 @@ export default function DashboardPage({ authState }) {
     ? Math.round(historyItems.reduce((sum, item) => sum + item.confidence, 0) / totalDiagnoses)
     : 0;
   const openAiCases = historyItems.filter((item) => item.provider === 'openai').length;
+  const reviewedCases = historyItems.filter((item) => item.reviewStatus === 'reviewed').length;
   const lowSeverityCases = historyItems.filter((item) => item.severity === 'low').length;
   const mediumSeverityCases = historyItems.filter((item) => item.severity === 'medium').length;
   const recentCases = historyItems.slice(0, 3);
@@ -97,6 +98,10 @@ export default function DashboardPage({ authState }) {
           <article className="card metric-card">
             <h2>{openAiCases}</h2>
             <p>OpenAI-backed diagnoses</p>
+          </article>
+          <article className="card metric-card">
+            <h2>{reviewedCases}</h2>
+            <p>Expert-reviewed cases</p>
           </article>
           <article className="card metric-card">
             <h2>{aiStatus?.configured ? 'Live' : 'Standby'}</h2>

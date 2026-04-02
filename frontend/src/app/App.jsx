@@ -8,7 +8,12 @@ import {
   logout,
 } from '../services/userService.js';
 
-const protectedRoutes = new Set(['#/upload-crop', '#/history', '#/dashboard']);
+const protectedRoutes = new Set([
+  '#/upload-crop',
+  '#/history',
+  '#/dashboard',
+  '#/knowledge-admin',
+]);
 
 function App() {
   const [currentHash, setCurrentHash] = useState(window.location.hash || '#/');

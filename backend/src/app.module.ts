@@ -12,6 +12,7 @@ import { DiagnosisModule } from './modules/diagnosis/diagnosis.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { AiModule } from './modules/ai/ai.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
+import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     DiagnosisModule,
     UploadModule,
     AiModule,
+    KnowledgeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

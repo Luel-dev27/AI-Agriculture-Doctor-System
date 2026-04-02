@@ -39,7 +39,14 @@ export default function LoginPage({ authState, isAuthLoading }) {
               email: email.trim(),
               password,
             });
-      const profile = await getProfile();
+
+      saveAuthSession({
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
+        user: session.user || null,
+      });
+
+      const profile = session.user || (await getProfile());
 
       saveAuthSession({
         accessToken: session.accessToken,

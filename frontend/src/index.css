@@ -335,7 +335,8 @@ main {
 
 .uploader input,
 .field input,
-.field select {
+.field select,
+.field textarea {
   width: 100%;
   border: 1px solid var(--line-strong);
   border-radius: 18px;
@@ -343,6 +344,11 @@ main {
   background: var(--panel-strong);
   color: var(--ink);
   font: inherit;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 110px;
 }
 
 .uploader button {
@@ -398,6 +404,10 @@ main {
   padding: 16px 18px;
   border-radius: 20px;
   background: rgba(223, 234, 215, 0.58);
+}
+
+.medicine-panel {
+  background: rgba(248, 232, 198, 0.5);
 }
 
 .insight-block {
@@ -580,6 +590,13 @@ main {
   grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
 }
 
+.knowledge-layout {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+  align-items: start;
+}
+
 .upload-form-card,
 .info-panel {
   padding: 24px;
@@ -666,9 +683,32 @@ main {
 
 .result-stack,
 .severity-bars,
-.recent-list {
+.recent-list,
+.review-form {
   display: grid;
   gap: 16px;
+}
+
+.review-form {
+  text-align: left;
+}
+
+.knowledge-form,
+.knowledge-card {
+  text-align: left;
+}
+
+.filter-card {
+  padding-bottom: 8px;
+}
+
+.success-note {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(223, 234, 215, 0.72);
+  border: 1px solid rgba(49, 97, 60, 0.14);
+  color: var(--forest-deep);
+  font-weight: 600;
 }
 
 .action-strip,
@@ -800,6 +840,7 @@ main {
   .hero-panel,
   .feature-ribbon,
   .upload-layout,
+  .knowledge-layout,
   .login-shell,
   .section-heading {
     grid-template-columns: 1fr;

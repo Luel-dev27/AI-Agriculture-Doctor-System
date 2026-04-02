@@ -6,7 +6,7 @@ export default function HomePage() {
           <p className="eyebrow">Field diagnostics, redesigned</p>
           <h1>Plant disease triage that feels as sharp as the science behind it.</h1>
           <p className="hero-text">
-            Upload crop images, generate structured diagnoses, track history, and monitor case severity from one clean operational dashboard.
+            Upload crop images, generate medicine-guided diagnoses, review expert feedback, and manage crop intelligence from one operational dashboard.
           </p>
           <div className="hero-actions">
             <a href="#/upload-crop" className="primary-link">Start a diagnosis</a>
@@ -40,12 +40,12 @@ export default function HomePage() {
         <article className="page feature-card">
           <p className="eyebrow">Case History</p>
           <h2>Trace every decision</h2>
-          <p>Review severity, confidence, provider source, and time of analysis across previous records.</p>
+          <p>Review severity, medicine guidance, provider source, and expert feedback across previous records.</p>
         </article>
         <article className="page feature-card">
-          <p className="eyebrow">Operations View</p>
-          <h2>Spot field risk faster</h2>
-          <p>Use dashboard summaries to surface high-severity cases before they spread.</p>
+          <p className="eyebrow">Knowledge Control</p>
+          <h2>Teach the AI safely</h2>
+          <p>Admins can add crop diseases, medicines, and symptom keywords that the diagnosis engine must follow.</p>
         </article>
       </section>
     </section>

@@ -17,4 +17,9 @@ export class CreateDiagnosisDto {
   @IsString()
   @Length(3, 500)
   imageUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(3, 500)
+  fieldNotes?: string;
 }

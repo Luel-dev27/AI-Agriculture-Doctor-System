@@ -16,6 +16,7 @@ model User {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now()) @updatedAt
   diagnoses    Diagnosis[]
+  reviews      DiagnosisFeedback[]
 }
 
 model Diagnosis {
@@ -25,18 +26,65 @@ model Diagnosis {
   cropName            String
   imageUrl            String?
   imageName           String?
+  fieldNotes          String?
   diseaseName         String
   confidence          Int
   recommendation      String
   summary             String
+  medicineName        String
+  applicationRate     String
+  preventionPlan      String
   severity            String
   urgency             String
   suspectedConditions String
   nextSteps           String
+  knowledgeMatches    String
+  advisorySource      String
+  reviewStatus        String
+  reviewedByName      String?
+  reviewNotes         String?
+  reviewedAt          DateTime?
   provider            String
   model               String
   createdAt           DateTime @default(now())
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  feedback            DiagnosisFeedback[]
 
   @@index([userId])
+}
+
+model KnowledgeEntry {
+  id                Int      @id @default(autoincrement())
+  cropName          String
+  diseaseName       String
+  aliases           String
+  symptomKeywords   String
+  medicineName      String
+  applicationRate   String
+  treatmentPlan     String
+  preventionPlan    String
+  severity          String
+  notes             String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
+
+  @@unique([cropName, diseaseName])
+  @@index([cropName])
+}
+
+model DiagnosisFeedback {
+  id                   Int       @id @default(autoincrement())
+  diagnosisId          Int
+  reviewerId           Int
+  resolution           String
+  confirmedDiseaseName String?
+  medicineName         String?
+  applicationRate      String?
+  notes                String
+  createdAt            DateTime  @default(now())
+  diagnosis            Diagnosis @relation(fields: [diagnosisId], references: [id], onDelete: Cascade)
+  reviewer             User      @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@index([diagnosisId])
+  @@index([reviewerId])
 }

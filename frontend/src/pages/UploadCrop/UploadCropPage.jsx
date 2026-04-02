@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import ImageUploader from '../../components/ImageUploader/ImageUploader.jsx';
 import Alert from '../../components/Alert/Alert.jsx';
 import Loader from '../../components/Loader/Loader.jsx';
-import { diagnoseCropImage } from '../../services/diagnosisService.js';
+import { diagnoseCropImageWithNotes } from '../../services/diagnosisService.js';
 import { getCrops } from '../../services/cropsService.js';
 
 export default function UploadCropPage() {
@@ -13,6 +13,7 @@ export default function UploadCropPage() {
   const [previewUrl, setPreviewUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldNotes, setFieldNotes] = useState('');
 
   useEffect(() => {
     let isActive = true;
@@ -71,9 +72,10 @@ export default function UploadCropPage() {
     setErrorMessage('');
 
     try {
-      const diagnosis = await diagnoseCropImage({
+      const diagnosis = await diagnoseCropImageWithNotes({
         cropName: cropName.trim() || 'Unknown crop',
         file: selectedFile,
+        fieldNotes,
       });
 
       sessionStorage.setItem('latestDiagnosis', JSON.stringify(diagnosis));
@@ -123,6 +125,15 @@ export default function UploadCropPage() {
                 disabled={isLoadingCrops}
               />
             )}
+          </label>
+          <label className="field">
+            <span>Field notes</span>
+            <textarea
+              value={fieldNotes}
+              onChange={(event) => setFieldNotes(event.target.value)}
+              placeholder="Optional: visible yellow spots, rust powder, lower leaves affected, after rainfall..."
+              rows={4}
+            />
           </label>
           {isLoadingCrops ? <Loader /> : null}
           <ImageUploader

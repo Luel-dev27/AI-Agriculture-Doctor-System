@@ -1,15 +1,17 @@
-const navItems = [
-  { label: 'Home', href: '#/' },
-  { label: 'Login', href: '#/login' },
-  { label: 'Upload Crop', href: '#/upload-crop' },
-  { label: 'Diagnosis Result', href: '#/diagnosis-result' },
-  { label: 'History', href: '#/history' },
-  { label: 'Dashboard', href: '#/dashboard' },
-];
-
 export default function Navbar({ currentHash, authState, onLogout }) {
   const userName = authState?.user?.name || 'Guest';
   const userRole = authState?.user?.role || 'visitor';
+  const navItems = [
+    { label: 'Home', href: '#/' },
+    ...(authState?.accessToken ? [] : [{ label: 'Login', href: '#/login' }]),
+    { label: 'Upload Crop', href: '#/upload-crop' },
+    { label: 'Diagnosis Result', href: '#/diagnosis-result' },
+    { label: 'History', href: '#/history' },
+    { label: 'Dashboard', href: '#/dashboard' },
+    ...(userRole === 'admin'
+      ? [{ label: 'Knowledge Base', href: '#/knowledge-admin' }]
+      : []),
+  ];
 
   return (
     <header className="site-header">

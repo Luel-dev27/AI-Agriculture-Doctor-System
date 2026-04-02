@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Req,
   UploadedFile,
@@ -12,7 +13,10 @@ import {
 import { Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { CreateDiagnosisDto } from './dto/create-diagnosis.dto';
+import { ReviewDiagnosisDto } from './dto/review-diagnosis.dto';
 import { DiagnosisService } from './diagnosis.service';
 
 @Controller('diagnosis')
@@ -61,6 +65,7 @@ export class DiagnosisController {
       cropId: body.cropId,
       cropName: body.cropName,
       imageUrl: body.imageUrl,
+      fieldNotes: body.fieldNotes,
       imageName: file?.originalname,
       mimeType: file?.mimetype,
       imageBuffer: file?.buffer,
@@ -76,5 +81,34 @@ export class DiagnosisController {
     },
   ) {
     return this.diagnosisService.history(request.user?.id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('agronomist', 'admin')
+  @Post(':id/review')
+  review(
+    @Param('id') id: string,
+    @Req()
+    request: Request & {
+      user?: { id: number; name: string };
+    },
+    @Body() body: ReviewDiagnosisDto,
+  ) {
+    const diagnosisId = Number(id);
+
+    if (!Number.isInteger(diagnosisId) || diagnosisId < 1) {
+      throw new BadRequestException('Diagnosis id must be a positive integer.');
+    }
+
+    return this.diagnosisService.reviewDiagnosis({
+      diagnosisId,
+      reviewerId: request.user?.id ?? 0,
+      reviewerName: request.user?.name?.trim() || 'Unknown reviewer',
+      resolution: body.resolution,
+      confirmedDiseaseName: body.confirmedDiseaseName,
+      medicineName: body.medicineName,
+      applicationRate: body.applicationRate,
+      notes: body.notes,
+    });
   }
 }

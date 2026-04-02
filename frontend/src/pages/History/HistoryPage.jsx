@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import DiseaseCard from '../../components/DiseaseCard/DiseaseCard.jsx';
+import DiagnosisReviewForm from '../../components/DiagnosisReviewForm/DiagnosisReviewForm.jsx';
 import Alert from '../../components/Alert/Alert.jsx';
 import Loader from '../../components/Loader/Loader.jsx';
 import { getDiagnosisHistory } from '../../services/diagnosisService.js';
@@ -38,6 +39,15 @@ export default function HistoryPage({ authState }) {
 
   const highSeverityCases = historyItems.filter((item) => item.severity === 'high').length;
   const latestCase = historyItems[0];
+  const reviewedCases = historyItems.filter((item) => item.reviewStatus === 'reviewed').length;
+  const canReview =
+    authState?.user?.role === 'agronomist' || authState?.user?.role === 'admin';
+
+  const handleReviewed = (updatedDiagnosis) => {
+    setHistoryItems((current) =>
+      current.map((item) => (item.id === updatedDiagnosis.id ? updatedDiagnosis : item)),
+    );
+  };
 
   return (
     <section className="page">
@@ -71,6 +81,10 @@ export default function HistoryPage({ authState }) {
             <strong>{highSeverityCases}</strong>
           </article>
           <article className="summary-chip">
+            <span>Reviewed</span>
+            <strong>{reviewedCases}</strong>
+          </article>
+          <article className="summary-chip">
             <span>Latest crop</span>
             <strong>{latestCase?.cropName || 'Unknown'}</strong>
           </article>
@@ -86,7 +100,12 @@ export default function HistoryPage({ authState }) {
       ) : null}
       <div className="stack stagger-stack">
         {historyItems.map((item) => (
-          <DiseaseCard key={item.id} {...item} />
+          <div key={item.id} className="stack">
+            <DiseaseCard {...item} />
+            {canReview ? (
+              <DiagnosisReviewForm diagnosis={item} onReviewed={handleReviewed} />
+            ) : null}
+          </div>
         ))}
       </div>
     </section>

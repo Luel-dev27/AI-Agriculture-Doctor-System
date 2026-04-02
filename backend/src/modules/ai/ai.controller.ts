@@ -12,7 +12,13 @@ export class AiController {
 
   @Post('analyze')
   analyze(
-    @Body() body: { imageUrl?: string; cropName?: string; fileName?: string },
+    @Body()
+    body: {
+      imageUrl?: string;
+      cropName?: string;
+      fileName?: string;
+      fieldNotes?: string;
+    },
   ) {
     return this.aiService.analyze(body);
   }
